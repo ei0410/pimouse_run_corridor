@@ -22,15 +22,20 @@ class WallStopTest(unittest.TestCase):
         return left,right
 
     def test_io(self):
-        self.set_sensor_values(400,100,100,0)
-        time.sleep(0.3)
-        left, right = self.get_freqs()
-        self.assertTrue(left == 0 and right == 0,"can't stop")
+        lift, right = self.set_and_get(400,100,100,0)
+        self.assertTrue(left == right == 0, "can't stop")
 
-        self.set_sensor_values(400,0,0,99)
-        time.sleep(0.3)
-        left, right = self.get_freqs()
-        self.assertTrue(left != 0 and right != 0,"can't move again")
+        lift, right = self.set_and_get(0,5,1000,0)
+        self.assertTrue(left == right != 0,"stop wrongly by side sensors")
+
+        lift, right = self.set_and_get(0,10,0,0)
+        self.assertTrue(left < right, "don't curve to left")
+
+        lift, right = self.set_and_get(0,200,0,0)
+        self.assertTrue(left > right, "don't curve to right")
+        
+        lift, right = self.set_and_get(0,5,0,0)
+        self.assertTrue(0 < left == right, "curve wrongly")
 
 if __name__ == '__main__':
     time.sleep(3)
